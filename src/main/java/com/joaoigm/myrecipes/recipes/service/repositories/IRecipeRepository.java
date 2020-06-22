@@ -1,7 +1,9 @@
 package com.joaoigm.myrecipes.recipes.service.repositories;
 
 import com.joaoigm.myrecipes.recipes.service.models.Recipe;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IRecipeRepository extends CrudRepository<Recipe, Integer> {
+import java.util.UUID;
+
+public interface IRecipeRepository extends MongoRepository<Recipe, UUID> {
 }

@@ -1,33 +1,25 @@
 package com.joaoigm.myrecipes.recipes.service.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
-@Entity
-@Table(name = "recipes")
+@Document(collection = "recipes")
 public class Recipe {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private UUID id;
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
     private Set<Ingredient> ingredients = new HashSet<Ingredient>();
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "recipe_steps", joinColumns = @JoinColumn(name = "recipe_id"))
     private Set<Step> steps = new HashSet<Step>();
 
-    @Column(unique = true)
     private String title;
 
     public Set<Ingredient> getIngredients(){
@@ -45,8 +37,12 @@ public class Recipe {
         this.title = title;
     }
 
+    public void generateId(){
+        this.id = UUID.randomUUID();
+    }
+
     @JsonCreator
-    public Recipe(int id, Set<Ingredient> ingredients, Set<Step> steps, String title) {
+    public Recipe(UUID id, Set<Ingredient> ingredients, Set<Step> steps, String title) {
         this.id = id;
         this.ingredients = ingredients;
         this.steps = steps;

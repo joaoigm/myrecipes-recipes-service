@@ -2,9 +2,6 @@ package com.joaoigm.myrecipes.recipes.service.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import javax.persistence.*;
-
-@Embeddable
 public class Step {
 
     private String description;

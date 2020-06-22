@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -22,7 +23,7 @@ public class RecipesController {
     private UserServices userServices = new UserServices();
 
     @GetMapping
-    public ResponseEntity<Iterable<Recipe>> getRecipes(@RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
+    public ResponseEntity<Iterable<Recipe>> getRecipes(@RequestHeader(value = "user-id", defaultValue = "") UUID userId){
         if(userServices.CheckUserAutenticated(userId)){
             return ResponseEntity.ok(recipeRepository.findAll());
         }
@@ -31,7 +32,7 @@ public class RecipesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Recipe> getRecipe(@PathVariable("id") Integer id, @RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
+    public ResponseEntity<Recipe> getRecipe(@PathVariable("id") UUID id, @RequestHeader(value = "user-id", defaultValue = "") UUID userId){
         if(userServices.CheckUserAutenticated(userId)){
             return ResponseEntity.ok(recipeRepository.findById(id).get());
         }
@@ -40,7 +41,7 @@ public class RecipesController {
 
     @GetMapping("/{id}/steps")
     public
-    ResponseEntity<Set<Step>> getRecipeSteps(@PathVariable("id") Integer id, @RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
+    ResponseEntity<Set<Step>> getRecipeSteps(@PathVariable("id") UUID id, @RequestHeader(value = "user-id", defaultValue = "") UUID userId){
         if(userServices.CheckUserAutenticated(userId)){
             return ResponseEntity.ok(recipeRepository.findById(id).get().getSteps());
         }
@@ -49,7 +50,7 @@ public class RecipesController {
 
     @GetMapping("/{id}/ingredients")
     public
-    ResponseEntity<Set<Ingredient>> getRecipeIngredients(@PathVariable("id") Integer id, @RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
+    ResponseEntity<Set<Ingredient>> getRecipeIngredients(@PathVariable("id") UUID id, @RequestHeader(value = "user-id", defaultValue = "") UUID userId){
         if(userServices.CheckUserAutenticated(userId)){
             return ResponseEntity.ok(recipeRepository.findById(id).get().getIngredients());
         }
@@ -57,8 +58,9 @@ public class RecipesController {
     }
 
     @PostMapping
-    public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe, @RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
+    public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe, @RequestHeader(value = "user-id", defaultValue = "") UUID userId){
         if(userServices.CheckUserAutenticated(userId)){
+            recipe.generateId();
             recipeRepository.save(recipe);
             return ResponseEntity.ok(recipeRepository.findById(recipe.getId()).get());
         }
@@ -66,8 +68,8 @@ public class RecipesController {
     }
 
     @PutMapping
-    public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe, @RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
-        if(userServices.CheckUserAutenticated(userId)){
+    public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe, @RequestHeader(value = "user-id", defaultValue = "") UUID userId){
+        if(userServices.CheckUserAutenticated(userId) && recipe.getId() != null){
             recipeRepository.save(recipe);
             return ResponseEntity.ok(recipeRepository.findById(recipe.getId()).get());
         }
@@ -76,7 +78,7 @@ public class RecipesController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Object deleteRecipe(@PathVariable("id")Integer id, @RequestHeader(value = "user-id", defaultValue = "0") Integer userId){
+    public @ResponseBody Object deleteRecipe(@PathVariable("id")UUID id, @RequestHeader(value = "user-id", defaultValue = "") UUID userId){
         if(userServices.CheckUserAutenticated(userId)){
             if(!recipeRepository.existsById(id)){ return Collections.singletonMap("message", "User with id "+id+" doesn't exist"); }
             recipeRepository.deleteById(id);

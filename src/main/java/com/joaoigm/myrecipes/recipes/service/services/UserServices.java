@@ -16,7 +16,7 @@ public class UserServices {
 
     public UserServices(){}
     public boolean CheckUserAutenticated(UUID id) {
-        HttpGet get = new HttpGet("http://localhost:8000"+"/api/users/authenticated?id="+id);
+        HttpGet get = new HttpGet(System.getenv("USERS_SERVICE_URL")+"/api/users/authenticated?id="+id);
         try {
             try(CloseableHttpResponse response = httpClient.execute(get)){
                 HttpEntity entity = response.getEntity();

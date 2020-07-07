@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/recipes")
+@CrossOrigin
 public class RecipesController {
     @Autowired
     private IRecipeRepository recipeRepository;
